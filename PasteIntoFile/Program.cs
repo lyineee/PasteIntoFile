@@ -18,16 +18,21 @@ namespace PasteAsFile
 		{
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);
+			bool isSilent = false;
+			if (args.Length>1 && args[1] == "/q")
+            {
+				isSilent = true;
+            }
 			if (args.Length>0)
 			{
 				if (args[0] == "/reg")
 				{
-					RegisterApp();
+					RegisterApp(isSilent);
 					return;
 				}
 				else if (args[0] == "/unreg")
 				{
-					UnRegisterApp();
+					UnRegisterApp(isSilent);
 					return;
 				}
                 else if (args[0] == "/filename")
@@ -63,7 +68,7 @@ namespace PasteAsFile
 			}
 		}
 
-		public static void UnRegisterApp()
+		public static void UnRegisterApp(bool isSilent = false)
 		{
 			try
 			{
@@ -73,8 +78,10 @@ namespace PasteAsFile
 				key = OpenDirectoryKey().OpenSubKey("shell", true);
 				key.DeleteSubKeyTree("Paste Into File");
 
-				MessageBox.Show("Application has been Unregistered from your system", "Paste Into File", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
+                if (!isSilent)
+                {
+					MessageBox.Show("Application has been Unregistered from your system", "Paste Into File", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
 			}
 			catch (Exception ex)
 			{
@@ -83,7 +90,7 @@ namespace PasteAsFile
 			}
 		}
 
-		public static void RegisterApp()
+		public static void RegisterApp(bool isSilent = false)
 		{
 			try
 			{
@@ -96,8 +103,11 @@ namespace PasteAsFile
 				key.SetValue("Icon", "\"" + Application.ExecutablePath + "\",0");
 				key = key.CreateSubKey("command");
 				key.SetValue("" , "\"" + Application.ExecutablePath + "\" \"%1\"");
-				MessageBox.Show("Application has been registered with your system", "Paste Into File", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
+                if (!isSilent)
+                {
+					MessageBox.Show("Application has been registered with your system", "Paste Into File", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
 			}
 			catch (Exception ex)
 			{
